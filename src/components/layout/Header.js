@@ -1,21 +1,22 @@
 'use client';
-import {CartContext} from "@/components/AppContext";
+import { CartContext } from "@/components/AppContext";
 import Bars2 from "@/components/icons/Bars2";
 import ShoppingCart from "@/components/icons/ShoppingCart";
-import {signOut, useSession} from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
-import {useContext, useState} from "react";
+import { useContext, useState } from "react";
 
-function AuthLinks({status, userName}) {
+function AuthLinks({ status, userName, profile }) {
   if (status === 'authenticated') {
     return (
       <>
-        <Link href={'/profile'} className="whitespace-nowrap">
-          Hello, {userName}
+        <Link href={'/profile'} className="flex gap-2 justify-center items-center whitespace-nowrap">
+          {profile && <Image className="rounded-full" width={25} height={25} src={profile} alt="profile" />} {userName}
         </Link>
         <button
           onClick={() => signOut()}
-          className="bg-primary rounded-full text-white px-8 py-2">
+          className="bg-primary rounded-full text-white ml-4 px-2">
           Logout
         </button>
       </>
@@ -38,7 +39,8 @@ export default function Header() {
   const status = session?.status;
   const userData = session.data?.user;
   let userName = userData?.name || userData?.email;
-  const {cartProducts} = useContext(CartContext);
+  const profileImage = userData?.image;
+  const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   if (userName && userName.includes(' ')) {
     userName = userName.split(' ')[0];
@@ -47,15 +49,15 @@ export default function Header() {
     <header>
       <div className="flex items-center md:hidden justify-between">
         <Link className="text-primary font-semibold text-2xl" href={'/'}>
-         4 KIDS STORE FRUIT STAND
+          4 KIDS STORE FRUIT STAND
         </Link>
         <div className="flex gap-8 items-center">
           <Link href={'/cart'} className="relative">
             <ShoppingCart />
             {cartProducts?.length > 0 && (
               <span className="absolute -top-2 -right-4 bg-primary text-white text-xs py-1 px-1 rounded-full leading-3">
-            {cartProducts.length}
-          </span>
+                {cartProducts.length}
+              </span>
             )}
           </Link>
           <button
@@ -73,13 +75,13 @@ export default function Header() {
           <Link href={'/menu'}>Menu</Link>
           <Link href={'/#about'}>About</Link>
           <Link href={'/#contact'}>Contact</Link>
-          <AuthLinks status={status} userName={userName} />
+          <AuthLinks status={status} userName={userName} profile={profileImage} />
         </div>
       )}
       <div className="hidden md:flex items-center justify-between">
-        <nav className="flex items-center gap-8 text-gray-500 font-semibold">
+        <nav className="flex items-center gap-4 text-gray-500 font-semibold">
           <Link className="text-primary font-semibold text-2xl" href={'/'}>
-          4 KIDS STORE FRUIT STAND
+            4 KIDS STORE FRUIT STAND
           </Link>
           <Link href={'/'}>Home</Link>
           <Link href={'/menu'}>Menu</Link>
@@ -87,13 +89,13 @@ export default function Header() {
           <Link href={'/#contact'}>Contact</Link>
         </nav>
         <nav className="flex items-center gap-4 text-gray-500 font-semibold">
-          <AuthLinks status={status} userName={userName} />
+          <AuthLinks status={status} userName={userName} profile={profileImage} />
           <Link href={'/cart'} className="relative">
             <ShoppingCart />
             {cartProducts?.length > 0 && (
               <span className="absolute -top-2 -right-4 bg-primary text-white text-xs py-1 px-1 rounded-full leading-3">
-            {cartProducts.length}
-          </span>
+                {cartProducts.length}
+              </span>
             )}
           </Link>
         </nav>
